@@ -15,3 +15,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+
+jwt:
+  secret: SharyanSecretKeyForJwtAuthenticationSystem123456789
+  expiration: 86400000
