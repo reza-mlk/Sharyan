@@ -2,6 +2,7 @@ package com.example.Sharyan.service;
 
 import com.example.Sharyan.dto.RegisterRequestDTO;
 import com.example.Sharyan.dto.RegisterResponseDTO;
+import com.example.Sharyan.dto.UserResponseDTO;
 import com.example.Sharyan.entity.Role;
 import com.example.Sharyan.entity.User;
 import com.example.Sharyan.entity.UserRole;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class UserService {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
+//    ===================== REGISTER =================================
     public RegisterResponseDTO register(RegisterRequestDTO requestDTO){
 
         if(userRepository.existsByUsername(requestDTO.getUsername())){
@@ -58,6 +61,51 @@ public class UserService {
 
     }
 
+// ===================== UPDATE USER ================================
+
+
+
+// =====================   GET ALL USERS =============================
+    public List<UserResponseDTO> getAllUsers(){
+
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToUserResponse)
+                .collect(Collectors.toList());
+    }
+
+//    ============== GET ACCOUNT ==============
+    public UserResponseDTO getAccount(String username){
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .roles(user.getUserRoles()
+                        .stream()
+                        .map(userRole ->
+                                userRole.getRole().getCode())
+                        .collect(Collectors.toSet()))
+                .permissions(user.getUserRoles()
+                        .stream()
+                        .flatMap(userRole ->
+                                userRole.getRole()
+                                        .getPermissions()
+                                        .stream())
+                        .map(permission ->
+                                permission.getCode()
+                        )
+                        .collect(Collectors.toSet()))
+                .build();
+
+    }
+
+
+//    ========================= CONVERTS ===========================
     private RegisterResponseDTO convertToRegisterResponse(User user){
         List<String> roles = user.getUserRoles()
                 .stream()
@@ -69,5 +117,20 @@ public class UserService {
                 user.getUsername(),
                 roles
         );
+    }
+
+    private UserResponseDTO convertToUserResponse(User user){
+
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .roles(user.getUserRoles()
+                        .stream()
+                        .map(userRole -> userRole.getRole().getCode())
+                        .collect(Collectors.toSet())
+                )
+                .build();
     }
 }

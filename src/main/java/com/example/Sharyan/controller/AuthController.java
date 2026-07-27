@@ -4,6 +4,7 @@ package com.example.Sharyan.controller;
 import com.example.Sharyan.dto.LoginRequestDTO;
 import com.example.Sharyan.dto.LoginResponseDTO;
 import com.example.Sharyan.dto.RegisterRequestDTO;
+import com.example.Sharyan.dto.RegisterResponseDTO;
 import com.example.Sharyan.service.AuthService;
 import com.example.Sharyan.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDTO requestDTO){
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO requestDTO){
 
-        userService.register(requestDTO);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("User registered successfully.");
+                .body(
+                        userService.register(requestDTO)
+                );
     }
 
     @PostMapping("/login")
