@@ -6,30 +6,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @Table(
-        name = "user_roles",
+        name = "role_menu",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_user_role",
-                        columnNames = {"user_id" , "role_id"}
+                        name = "uk_role_menu",
+                        columnNames = {"role_id" , "menu_id"}
                 )
         }
 )
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
-public class UserRole extends BaseEntity {
+public class RoleMenu extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY , optional = false)
-    @JoinColumn(name = "user_id" , nullable = false)
-    private User user;
-
-
-    @ManyToOne(fetch = FetchType.EAGER , optional = false)
     @JoinColumn(name = "role_id" , nullable = false)
     private Role role;
 
-
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
+    @JoinColumn(name = "menu_id" , nullable = false)
+    private Menu menu;
 }

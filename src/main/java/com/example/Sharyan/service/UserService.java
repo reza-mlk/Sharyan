@@ -3,17 +3,20 @@ package com.example.Sharyan.service;
 import com.example.Sharyan.dto.RegisterRequestDTO;
 import com.example.Sharyan.dto.RegisterResponseDTO;
 import com.example.Sharyan.dto.UserResponseDTO;
+import com.example.Sharyan.dto.UserUpdateRequestDTO;
 import com.example.Sharyan.entity.Role;
 import com.example.Sharyan.entity.User;
 import com.example.Sharyan.entity.UserRole;
 import com.example.Sharyan.repository.RoleRepository;
 import com.example.Sharyan.repository.UserRepository;
 import com.example.Sharyan.repository.UserRoleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,11 +64,62 @@ public class UserService {
 
     }
 
-// ===================== UPDATE USER ================================
+
+//    ====================== ADMIN , SUPER_ADMIN =========================
+
+// ============== UPDATE USER ==================
+    @Transactional
+    public  UserResponseDTO updateUser(UUID id , UserUpdateRequestDTO requestDTO){
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found")   );
+
+        if(requestDTO.getEmail() != null){
+            user.setEmail(requestDTO.getEmail());
+        }
+        if(requestDTO.getFirstName() != null){
+            user.setFirstName(requestDTO.getFirstName());
+        }
+        if(requestDTO.getLastName() != null){
+            user.setLastName(requestDTO.getLastName());
+        }
+        if(requestDTO.getPhoneNumber() != null){
+            user.setPhoneNumber(requestDTO.getPhoneNumber());
+        }
+        if(requestDTO.getEnabled() != null){
+            user.setEnabled(requestDTO.getEnabled());
+        }
+
+        User savedUser = userRepository.save(user);
+
+        return convertToUserResponse(savedUser);
 
 
+    }
+// ============== USER DELETE =========
+    @Transactional
+    public void deleteUser(UUID id){
 
-// =====================   GET ALL USERS =============================
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+    }
+
+//    =========== CHANGE USER STATUS ============
+    public UserResponseDTO changeUserStatus(UUID id , boolean enabled){
+
+        User user  = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setEnabled(enabled);
+
+        User savedUser = userRepository.save(user);
+        return convertToUserResponse(savedUser);
+    }
+
+
+// ============   GET ALL USERS ===============
     public List<UserResponseDTO> getAllUsers(){
 
         return userRepository.findAll()
@@ -74,38 +128,53 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-//    ============== GET ACCOUNT ==============
-    public UserResponseDTO getAccount(String username){
+
+
+//    ============================== USER =====================================
+
+
+//    ============= GET MY PROFILE ============
+    public UserResponseDTO getMyProfile(String username){
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return UserResponseDTO.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .roles(user.getUserRoles()
-                        .stream()
-                        .map(userRole ->
-                                userRole.getRole().getCode())
-                        .collect(Collectors.toSet()))
-                .permissions(user.getUserRoles()
-                        .stream()
-                        .flatMap(userRole ->
-                                userRole.getRole()
-                                        .getPermissions()
-                                        .stream())
-                        .map(permission ->
-                                permission.getCode()
-                        )
-                        .collect(Collectors.toSet()))
-                .build();
+        return convertToUserResponse(user);
+    }
+
+//    ============== UPDATE MY PROFILE ========= NO USAGE
+    @Transactional
+    public UserResponseDTO updateMyProfile(String username , UserUpdateRequestDTO requestDTO){
+
+        User user  = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(requestDTO.getEmail() != null){
+            user.setEmail(requestDTO.getEmail());
+        }
+        if(requestDTO.getFirstName() != null){
+            user.setFirstName(requestDTO.getFirstName());
+        }
+        if(requestDTO.getLastName() != null){
+            user.setLastName(requestDTO.getLastName());
+        }
+        if(requestDTO.getPhoneNumber() != null){
+            user.setPhoneNumber(requestDTO.getPhoneNumber());
+        }
+
+        User savedUser = userRepository.save(user);
+
+        return convertToUserResponse(savedUser);
 
     }
 
 
+
+
 //    ========================= CONVERTS ===========================
+
+
+
     private RegisterResponseDTO convertToRegisterResponse(User user){
         List<String> roles = user.getUserRoles()
                 .stream()
@@ -124,11 +193,25 @@ public class UserService {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .roles(user.getUserRoles()
                         .stream()
                         .map(userRole -> userRole.getRole().getCode())
+                        .collect(Collectors.toSet())
+
+                )
+
+                .permissions(user.getUserRoles()
+                        .stream()
+                        .flatMap(userRole ->
+                                userRole.getRole()
+                                        .getPermissions()
+                                        .stream()
+                        )
+                        .map(permission -> permission.getCode())
                         .collect(Collectors.toSet())
                 )
                 .build();

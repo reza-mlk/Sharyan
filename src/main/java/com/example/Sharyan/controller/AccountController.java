@@ -21,6 +21,6 @@ public class AccountController {
 
         String username = authentication.getName();
 
-        return ResponseEntity.ok(userService.getAccount(username));
+        return ResponseEntity.ok(userService.getMyProfile(username));
     }
 }

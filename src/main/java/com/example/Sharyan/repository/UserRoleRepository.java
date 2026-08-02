@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface UserRoleRepository extends JpaRepository<UserRole , UUID> {
 
     boolean existsByUserIdAndRoleId(UUID userId , UUID roleId);
+
+    void deleteByUserIdAndRoleId(UUID userId , UUID roleId);
 }

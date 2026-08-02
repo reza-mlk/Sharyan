@@ -2,13 +2,18 @@ package com.example.Sharyan.service;
 
 import com.example.Sharyan.dto.RoleRequestDTO;
 import com.example.Sharyan.dto.RoleResponseDTO;
+import com.example.Sharyan.entity.Menu;
 import com.example.Sharyan.entity.Role;
+import com.example.Sharyan.repository.MenuRepository;
 import com.example.Sharyan.repository.RoleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,7 +21,9 @@ import java.util.stream.Collectors;
 public class RoleService {
 
     private final RoleRepository roleRepository;
+    private final MenuRepository menuRepository;
 
+//    =================== CREATE ROLE ===========================
     public RoleResponseDTO createRole(RoleRequestDTO requestDTO){
 
         if(roleRepository.existsByCode(requestDTO.getCode())){
@@ -33,13 +40,17 @@ public class RoleService {
 
         return convertToRoleResponse(role);
     }
-
+// ==================== GET ALL ROLES ==========================
     public Set<RoleResponseDTO> getAllRoles(){
         return roleRepository.findAll()
                 .stream()
                 .map(this::convertToRoleResponse)
                 .collect(Collectors.toSet());
     }
+
+
+
+//    ========================= CONVERTS =========================
 
     private RoleResponseDTO convertToRoleResponse(Role role){
 

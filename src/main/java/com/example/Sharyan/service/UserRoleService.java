@@ -7,6 +7,7 @@ import com.example.Sharyan.entity.UserRole;
 import com.example.Sharyan.repository.RoleRepository;
 import com.example.Sharyan.repository.UserRepository;
 import com.example.Sharyan.repository.UserRoleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class UserRoleService {
 
 
 //    =============== ASSIGN ROLE ===========================
+    @Transactional
     public UserResponseDTO assignRole(UUID userId , UUID roleId){
 
         User user = userRepository.findById(userId)
@@ -53,6 +55,18 @@ public class UserRoleService {
         userRoleRepository.save(userRole);
         return convertToUserResponse(user);
 
+    }
+
+//    ====================== REMOVE RULE FROM USER ==========================
+    @Transactional
+    public boolean removeRoleFromUser(UUID userId , UUID roleId){
+
+        if (!userRoleRepository.existsByUserIdAndRoleId(userId , roleId)){
+            throw new RuntimeException("User Role relation not found");
+        }
+
+        userRoleRepository.deleteByUserIdAndRoleId(userId , roleId);
+        return true;
     }
 
 

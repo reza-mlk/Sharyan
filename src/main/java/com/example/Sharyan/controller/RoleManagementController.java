@@ -1,5 +1,6 @@
 package com.example.Sharyan.controller;
 
+
 import com.example.Sharyan.dto.RoleRequestDTO;
 import com.example.Sharyan.dto.RoleResponseDTO;
 import com.example.Sharyan.service.RoleService;
@@ -28,4 +29,6 @@ public class RoleManagementController {
     public ResponseEntity<Set<RoleResponseDTO>> getRoles(){
         return ResponseEntity.ok(roleService.getAllRoles());
     }
+
+
 }

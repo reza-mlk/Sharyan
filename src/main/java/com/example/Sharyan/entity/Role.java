@@ -42,4 +42,11 @@ public class Role extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions = new HashSet<>();
+
+
+    @OneToMany(
+            mappedBy = "role" ,
+            cascade = CascadeType.ALL
+    )
+    private Set<RoleMenu> roleMenus = new HashSet<>();
 }
