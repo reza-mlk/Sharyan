@@ -1,11 +1,8 @@
-package com.example.Sharyan.controller;
+package com.example.Sharyan.security;
 
 
-import com.example.Sharyan.dto.LoginRequestDTO;
-import com.example.Sharyan.dto.LoginResponseDTO;
 import com.example.Sharyan.dto.RegisterRequestDTO;
 import com.example.Sharyan.dto.RegisterResponseDTO;
-import com.example.Sharyan.service.AuthService;
 import com.example.Sharyan.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,5 +34,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO requestDTO){
         return ResponseEntity.ok(authService.login(requestDTO));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO requestDTO){
+
+        return ResponseEntity.ok(authService.refreshToken(requestDTO.getRefreshToken()));
     }
 }

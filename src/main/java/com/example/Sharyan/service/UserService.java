@@ -80,9 +80,12 @@ public class UserService {
         if(requestDTO.getFirstName() != null){
             user.setFirstName(requestDTO.getFirstName());
         }
+
         if(requestDTO.getLastName() != null){
             user.setLastName(requestDTO.getLastName());
         }
+
+
         if(requestDTO.getPhoneNumber() != null){
             user.setPhoneNumber(requestDTO.getPhoneNumber());
         }
@@ -106,17 +109,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-//    =========== CHANGE USER STATUS ============
-    public UserResponseDTO changeUserStatus(UUID id , boolean enabled){
 
-        User user  = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        user.setEnabled(enabled);
-
-        User savedUser = userRepository.save(user);
-        return convertToUserResponse(savedUser);
-    }
 
 
 // ============   GET ALL USERS ===============
@@ -197,6 +190,7 @@ public class UserService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
+                .enabled(user.isEnabled())
                 .roles(user.getUserRoles()
                         .stream()
                         .map(userRole -> userRole.getRole().getCode())

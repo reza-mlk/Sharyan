@@ -1,4 +1,4 @@
-package com.example.Sharyan.dto;
+package com.example.Sharyan.security;
 
 import lombok.Getter;
 import lombok.Setter;

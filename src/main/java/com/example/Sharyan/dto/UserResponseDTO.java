@@ -25,5 +25,6 @@ public class UserResponseDTO {
 
     private Set<String> roles;
 
+    private boolean enabled;
     private Set<String> permissions;
 }

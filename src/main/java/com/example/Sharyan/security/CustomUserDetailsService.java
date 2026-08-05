@@ -1,4 +1,4 @@
-package com.example.Sharyan.service;
+package com.example.Sharyan.security;
 
 import com.example.Sharyan.entity.User;
 import com.example.Sharyan.repository.UserRepository;

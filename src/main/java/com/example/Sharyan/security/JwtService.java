@@ -1,4 +1,4 @@
-package com.example.Sharyan.service;
+package com.example.Sharyan.security;
 
 import com.example.Sharyan.entity.User;
 import io.jsonwebtoken.Jwts;
@@ -23,15 +23,34 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long expiration;
 
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshExpiration;
+
+//    ================= ACCESS TOKEN =======================
     public String generateToken(User user){
 
         return Jwts.builder()
                 .subject(user.getUsername())
+                .claim("type" , "ACCESS")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration)
                 )
                 .signWith(getKey())
                 .compact();
+    }
+
+    //    ==================== REFRESH TOKEN ====================================
+    public String generateRefreshToken(User user){
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim("type" , "REFRESH")
+                .issuedAt(new Date())
+                .expiration(
+                        new Date(System.currentTimeMillis() + refreshExpiration)
+                )
+                .signWith(getKey())
+                .compact();
+
     }
 
     public String extractUsername(String token){
@@ -44,6 +63,16 @@ public class JwtService {
                 .getSubject();
     }
 
+    public String extractTokenType(String token){
+
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("type" , String.class);
+    }
+
 
 
     public boolean isValid(String token , UserDetails userDetails){
@@ -52,7 +81,7 @@ public class JwtService {
         return username.equals(userDetails.getUsername()) && !isExpired(token);
     }
 
-    private boolean isExpired(String token){
+    public boolean isExpired(String token){
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()

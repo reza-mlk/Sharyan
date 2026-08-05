@@ -31,12 +31,6 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id , requestDTO));
     }
 
-    @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    public ResponseEntity<UserResponseDTO> changeUserStatus(@PathVariable UUID id , @RequestParam boolean enabled){
-
-        return ResponseEntity.ok(userService.changeUserStatus(id , enabled));
-    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")

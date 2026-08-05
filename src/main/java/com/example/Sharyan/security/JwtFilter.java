@@ -1,7 +1,5 @@
 package com.example.Sharyan.security;
 
-import com.example.Sharyan.service.CustomUserDetailsService;
-import com.example.Sharyan.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +35,10 @@ public class JwtFilter extends OncePerRequestFilter {
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             token = authHeader.substring(7);
 
+            if(!"ACCESS".equals(jwtService.extractTokenType(token))){
+                filterChain.doFilter(request , response);
+                return;
+            }
 
             username = jwtService.extractUsername(token);
 

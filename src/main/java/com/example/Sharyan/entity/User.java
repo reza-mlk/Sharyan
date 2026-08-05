@@ -46,4 +46,11 @@ public class User extends BaseEntity {
             fetch = FetchType.EAGER
     )
     private Set<UserRole> userRoles = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<RefreshToken> refreshTokens = new HashSet<>();
 }

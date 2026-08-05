@@ -3,6 +3,8 @@ package com.example.Sharyan.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 @Data
@@ -17,5 +19,7 @@ public class RoleResponseDTO {
 
     private String description;
 
-    private boolean enabled;
+    private Boolean enabled;
+
+    private Set<String> menus;
 }
